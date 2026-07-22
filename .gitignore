@@ -1,0 +1,22 @@
+# Apps Script / clasp — nunca subir la config real con el scriptId
+Scripts/.clasp.json
+.clasp.json
+.clasprc.json
+
+# Secretos / entorno
+.env
+.env.*
+*.local
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
