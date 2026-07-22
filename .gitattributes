@@ -1,0 +1,4 @@
+# Los archivos .gs son Google Apps Script (JavaScript V8).
+# Forzamos a GitHub Linguist a contarlos como JavaScript para que el repo
+# muestre el lenguaje correcto en la barra de estadísticas.
+*.gs linguist-language=JavaScript

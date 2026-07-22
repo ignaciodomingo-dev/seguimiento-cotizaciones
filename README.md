@@ -52,22 +52,27 @@ garantiza que no sale ningún correo al cliente aunque el resto falle.
 
 ## Arquitectura
 
-```
-[API ERP] ──▶ Planilla "Cotizaciones Bsale" ──▶ [Filtro] ──▶ "Cotizaciones Vendedor"
-                                                                    │ (quedan "Por procesar")
-                        [Panel de control: eliges flujo + "Procesar ahora"]
-                                     │
-                                     ▼
-              [Crear negocio] ──▶ negocio + tarea + correo inicial (día 0)
-                                     │
-              [Seguimientos]  ──▶ recordatorios día 3 / 7 (mismo hilo)
-                                     │
-              [Cierre]        ──▶ día hábil 21 → Venta perdida
-                                     │
-[CSV pedidos] ──▶ [Cruce] ──▶ mueve el negocio: Pedido ingresado / Venta exitosa / perdida
-                                     │
-                                     ▼
-                              [HubSpot]  ·  [Gmail]  ·  [Slack]
+```mermaid
+flowchart TD
+    ERP[("API ERP")] -->|descarga| SS["Planilla<br/>Cotizaciones"]
+    SS --> FIL["Filtro por vendedor"]
+    FIL --> PAN{{"Panel de control<br/>elige flujo"}}
+    PAN --> DEAL["Crear negocio en HubSpot<br/>+ correo inicial (día 0)"]
+    DEAL --> SEG["Seguimientos<br/>día hábil 3 y 7"]
+    SEG --> CIE["Cierre día hábil 21<br/>→ Venta perdida"]
+
+    CSV[("CSV de pedidos")] --> CRU["Cruce de pedidos"]
+    CRU -->|conversión| MOV["Mueve el negocio:<br/>Pedido ingresado / Venta exitosa / perdida"]
+
+    DEAL --> HS[("HubSpot")]
+    SEG --> GM[("Gmail")]
+    MOV --> HS
+    CIE --> HS
+    DEAL -.-> SL[("Slack")]
+
+    KILL["🛑 Kill-switch global (fail-closed)<br/>apagado = no sale ningún correo"] -.bloquea.-> SEG
+    KILL -.bloquea.-> DEAL
+    KILL -.bloquea.-> CIE
 ```
 
 Documentación técnica completa (planillas, columnas, reglas de negocio, cadencias
